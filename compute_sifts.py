@@ -71,25 +71,29 @@ def compute_sift_region(grad_norm, grad_ori_disc, mask=None):
     return encodage
 
 def compute_sift_image(I):
+    """pas scale invariant"""
     x, y = dense_sampling(I)
     im = auto_padding(I)
-
-    # TODO calculs communs aux patchs
-    grad_norm, grad_ori_disc = compute_grad_mod_ori(I)
-    print("x", x.shape, x)
-    print("y", y.shape, y)
-    print("im", im.shape)
-    print("gn", grad_norm.shape)
-    print("go", grad_ori_disc.shape)
-    
+    grad_norm, grad_ori_disc = compute_grad_mod_ori(im)
     sifts = np.empty((len(x), len(y), 128))
     shift_x = shift_y = 16
+    
     for i, xi in enumerate(x):
         for j, yj in enumerate(y):
-            # TODO SIFT du patch de coordonnées (xi, yj)
+            # SIFT du patch de coordonnées (xi, yj)
             gn = grad_norm    [xi: xi + shift_x, yj: yj + shift_y]
             go = grad_ori_disc[xi: xi + shift_x, yj: yj + shift_y]
-            print(gn.shape)
-            print(go.shape)
             sifts[i, j, :] = compute_sift_region(gn, go, mask=None)
     return sifts
+
+def _test_compute_sift_image():
+    from tools import load_dataset
+    dir_sc = os.path.join('data', 'Scene')
+    dir_sift = os.path.join('data', 'sift')
+    inames, ilabls, cnames = load_dataset(dir_sc)
+    print(len(inames))
+    exit()
+    compute_load_sift_dataset(dir_sc, dir_sift, inames, compute_sift_image)
+
+if __name__ == '__main__':
+    _test_compute_sift_image()
