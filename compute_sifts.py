@@ -1,4 +1,3 @@
-import os
 from tools import *
 """
 dir_sc = os.path.join('data', 'Scene')
@@ -37,9 +36,9 @@ def compute_sift_region(grad_norm, grad_ori_disc, mask=None):
     mask: """
     l = 16
     n_orientation = 8
-    assert(grad_norm.shape == (l,l))
-    assert(grad_ori_disc.shape == (l,l))
-    #assert (0<=grad_ori_disc.reshape(-1)<n_orientation).all()
+    assert grad_norm.shape == (l,l), grad_norm.shape
+    assert grad_ori_disc.shape == (l,l), grad_ori_disc.shape
+    assert np.all((0<=grad_ori_disc) & (grad_ori_disc<n_orientation) | (grad_ori_disc==-1))
         
     if mask is not None:
         grad_norm = grad_norm.multiply(mask)
@@ -74,10 +73,23 @@ def compute_sift_region(grad_norm, grad_ori_disc, mask=None):
 def compute_sift_image(I):
     x, y = dense_sampling(I)
     im = auto_padding(I)
-    
+
     # TODO calculs communs aux patchs
-    sifts = np.zeros(len(x), len(y), 128)
+    grad_norm, grad_ori_disc = compute_grad_mod_ori(I)
+    print("x", x.shape, x)
+    print("y", y.shape, y)
+    print("im", im.shape)
+    print("gn", grad_norm.shape)
+    print("go", grad_ori_disc.shape)
+    
+    sifts = np.empty((len(x), len(y), 128))
+    shift_x = shift_y = 16
     for i, xi in enumerate(x):
         for j, yj in enumerate(y):
-            sifts[i, j, :] = None # TODO SIFT du patch de coordonnee (xi, yj)
+            # TODO SIFT du patch de coordonnées (xi, yj)
+            gn = grad_norm    [xi: xi + shift_x, yj: yj + shift_y]
+            go = grad_ori_disc[xi: xi + shift_x, yj: yj + shift_y]
+            print(gn.shape)
+            print(go.shape)
+            sifts[i, j, :] = compute_sift_region(gn, go, mask=None)
     return sifts
