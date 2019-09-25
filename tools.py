@@ -1,9 +1,10 @@
 import numpy as np
-import matplotlib.pyplot as mplt
+import matplotlib.pyplot as plt
 import matplotlib
 #from tqdm import tqdm
 from glob import glob
 import os
+
 
 # Very simplified tqdm
 class tqdm:
@@ -136,7 +137,7 @@ def compute_grad_ori(g_x, g_y, g_m, b=8):
     return g_o
 
 def read_grayscale(path):
-    img = mplt.imread(path)
+    img = plt.imread(path)
     if len(img.shape) > 2:
         if img.shape[2] == 1:
             img = img[:, :, 0]
@@ -176,38 +177,38 @@ def display_sift_region(im, compute_grad_mod_ori, compute_sift_region, x=200, y=
     b = 8
     cmap = cmap_discretize('jet', b+1)
 
-    mplt.figure(figsize=(10,6))
-    ax = mplt.subplot(2,3,1)
-    mplt.imshow(im, cmap='gray', vmin=0, vmax=255)
+    plt.figure(figsize=(10, 6))
+    ax = plt.subplot(2, 3, 1)
+    plt.imshow(im, cmap='gray', vmin=0, vmax=255)
     rect = matplotlib.patches.Rectangle((x,y),k,k,linewidth=1,edgecolor='r',facecolor='none')
     ax.add_patch(rect)
-    mplt.title("Image")
+    plt.title("Image")
 
-    mplt.subplot(2,3,2)
-    mplt.imshow(im[y:y+k, x:x+k], cmap='gray', vmin=0, vmax=255)
-    mplt.title("Patch")
+    plt.subplot(2, 3, 2)
+    plt.imshow(im[y:y + k, x:x + k], cmap='gray', vmin=0, vmax=255)
+    plt.title("Patch")
 
-    mplt.subplot(2,3,4)
-    mplt.imshow(g_m[y:y+k, x:x+k], cmap='jet')
-    mplt.colorbar()
-    mplt.title("Gradient module")
+    plt.subplot(2, 3, 4)
+    plt.imshow(g_m[y:y + k, x:x + k], cmap='jet')
+    plt.colorbar()
+    plt.title("Gradient module")
 
-    mplt.subplot(2,3,6)
+    plt.subplot(2, 3, 6)
     ori_map = orientation_colors()
-    mplt.imshow(ori_map, cmap=cmap, vmin=-1, vmax=b-1)
-    mplt.colorbar()
-    mplt.title("Orientations")
+    plt.imshow(ori_map, cmap=cmap, vmin=-1, vmax=b - 1)
+    plt.colorbar()
+    plt.title("Orientations")
 
-    mplt.subplot(2,3,5)
-    mplt.imshow(g_o[y:y+k, x:x+k], cmap=cmap, vmin=-1, vmax=b-1)
-    mplt.colorbar()
-    mplt.title("Gradient orientation")
+    plt.subplot(2, 3, 5)
+    plt.imshow(g_o[y:y + k, x:x + k], cmap=cmap, vmin=-1, vmax=b - 1)
+    plt.colorbar()
+    plt.title("Gradient orientation")
 
-    mplt.subplot(2,3,3)
-    mplt.plot(sift)
-    mplt.title("SIFT")
+    plt.subplot(2, 3, 3)
+    plt.plot(sift)
+    plt.title("SIFT")
 
-    mplt.show()
+    plt.show()
 
     return sift
 
@@ -329,7 +330,7 @@ def compute_regions(im, k=16, s=8):
     return images
 
 def get_regions_and_sifts(dir_sc, inames):
-    from sift import compute_sift_image
+    from compute_sifts import compute_sift_image
 
     vdpaths = [os.path.join(dir_sc, iname) for iname in inames]
 
@@ -361,11 +362,11 @@ def display_images(images):
         j = k // n
         im[i*w:i*w+w, j*h:j*h+h] = images[k]
 
-    mplt.figure(figsize=(0.7*n,0.7*n))
-    mplt.gray()
-    mplt.imshow(im)
-    mplt.axis('off')
-    mplt.show()
+    plt.figure(figsize=(0.7 * n, 0.7 * n))
+    plt.gray()
+    plt.imshow(im)
+    plt.axis('off')
+    plt.show()
 
 
 def display_vdregions(images, colors=None):
