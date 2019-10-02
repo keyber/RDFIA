@@ -433,7 +433,7 @@ def display_vdregions_image(im, vdict, sift, feats, colors=None, vdregions=None)
                 continue
 
             id_ = nonzero[0]
-            if vdregions[id_] is None:
+            if vdregions[id_] is None and i*8+16 < im.shape[0] and j*8+16 < im.shape[1]:  # modifié par nous
                 vdregions[id_] = im[i*8:i*8+16,j*8:j*8+16]
 
             rect = matplotlib.patches.Rectangle(
