@@ -5,7 +5,7 @@ from sklearn.metrics import classification_report
 import matplotlib.pyplot as plt
 
 
-data = np.load("15_scenes_Xy.npz", "rb")
+data = np.load("data/15_scenes_Xy.npz", "rb")
 X_train_all, X_test, y_train_all, y_test = train_test_split(data["X"], data["y"], test_size=.2)
 X_train, X_val, y_train, y_val = train_test_split(X_train_all, y_train_all, test_size=.125)
 
@@ -17,7 +17,7 @@ best_score = -np.inf
 best_c = None
 
 for c in list_c:
-    clf = LinearSVC(C=c, max_iter=int(1e5))
+    clf = LinearSVC(C=c, max_iter=int(1e2))
     clf.fit(X_train, y_train)
     score_train.append(clf.score(X_train, y_train))
     score = clf.score(X_val, y_val)
