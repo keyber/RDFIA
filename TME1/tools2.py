@@ -330,7 +330,7 @@ def compute_regions(im, k=16, s=8):
     return images
 
 def get_regions_and_sifts(dir_sc, inames):
-    from compute_sifts import compute_sift_image
+    from TME1.compute_sifts2 import compute_sift_image
 
     vdpaths = [os.path.join(dir_sc, iname) for iname in inames]
 

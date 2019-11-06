@@ -1,4 +1,4 @@
-from tools import *
+from TME1.tools2 import *
 """
 dir_sc = os.path.join('data', 'Scene')
 dir_sift = os.path.join('data', 'sift')
@@ -87,7 +87,7 @@ def compute_sift_image(I):
     return sifts
 
 def _test_compute_sift_image():
-    from tools import load_dataset
+    from TME1.tools2 import load_dataset
     dir_sc = os.path.join('data', 'Scene')
     dir_sift = os.path.join('data', 'sift')
     inames, ilabls, cnames = load_dataset(dir_sc)

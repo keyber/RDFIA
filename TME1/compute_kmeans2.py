@@ -1,5 +1,4 @@
-import os
-from tools import *
+from TME1.tools2 import *
 # from sift import *
 # from kmeans import *
 

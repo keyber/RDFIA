@@ -1,5 +1,4 @@
-import os
-from tools import *
+from TME1.tools2 import *
 """
 dir_sc = os.path.join('data', 'Scene')
 dir_sift = os.path.join('data', 'sift')
