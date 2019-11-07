@@ -95,15 +95,15 @@ def get_dataset(batch_size, path):
     """
     train_dataset = datasets.CIFAR10(path, train=True, download=True,
         transform=transforms.Compose([
-            transforms.ToTensor(),
-            transforms.RandomHorizontalFlip(),
             transforms.RandomCrop(28),
+            transforms.RandomHorizontalFlip(),
+            transforms.ToTensor(),
             transforms.Normalize((.491, .482, .447), (.202, .199, .201)), #mean std
         ]))
     val_dataset = datasets.CIFAR10(path, train=False, download=True,
         transform=transforms.Compose([
-            transforms.ToTensor(),
             transforms.CenterCrop(28),
+            transforms.ToTensor(),
             transforms.Normalize((.491, .482, .447), (.202, .199, .201)), #mean std
         ]))
 
@@ -118,8 +118,6 @@ def get_dataset(batch_size, path):
 
 def epoch(data, model, criterion, optimizer=None):
     """
-    Fait une passe (appelée epoch en anglais) sur les données `data` avec le
-    modèle `model`. Evalue `criterion` comme loss.
     Si `optimizer` est fourni, effectue une epoch d'apprentissage en utilisant
     l'optimiseur donné, sinon, effectue une epoch d'évaluation (pas de backward)
     du modèle.
