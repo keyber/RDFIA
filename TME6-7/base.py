@@ -1,17 +1,15 @@
 import argparse
-import os
 import time
-
 import torch
 import torch.nn as nn
 import torch.nn.parallel
 import torch.backends.cudnn as cudnn
 import torch.optim
+import torch.optim.lr_scheduler
 import torch.utils.data
 import torchvision.transforms as transforms
 import torchvision.datasets as datasets
 datasets.CIFAR10.url = "http://webia.lip6.fr/~robert/cours/rdfia/cifar-10-python.tar.gz" # Permet de télécharger CIFAR10 depuis les serveurs UPMC
-
 from tme6 import *
 
 PRINT_INTERVAL = 50
@@ -46,9 +44,9 @@ class ConvNet(nn.Module):
         )
 
     # méthode appelée quand on applique le réseau à un batch d'input
-    def forward(self, input):
-        bsize = input.size(0) # taille du batch
-        output = self.features(input) # on calcule la sortie des conv
+    def forward(self, input_):
+        bsize = input_.size(0) # taille du batch
+        output = self.features(input_) # on calcule la sortie des conv
         output = output.view(bsize, -1) # on aplatit les feature map 2D en un
                                         # vecteur 1D pour chaque input
         output = self.classifier(output) # on calcule la sortie des fc
@@ -92,7 +90,7 @@ class tme6(nn.Module):
 
 def get_dataset(batch_size, path):
     """
-    Cette fonction charge le dataset et effectue des transformations sur chaqu
+    Cette fonction charge le dataset et effectue des transformations sur chaque
     image (listées dans `transform=...`).
     """
     train_dataset = datasets.CIFAR10(path, train=True, download=True,
@@ -140,14 +138,14 @@ def epoch(data, model, criterion, optimizer=None):
 
     # on itere sur les batchs du dataset
     tic = time.time()
-    for i, (input, target) in enumerate(data):
+    for i, (input_, target) in enumerate(data):
 
         if CUDA: # si on fait du GPU, passage en CUDA
-            input = input.cuda()
+            input_ = input_.cuda()
             target = target.cuda()
 
         # forward
-        output = model(input)
+        output = model(input_)
         loss = criterion(output, target)
 
         # backward si on est en "train"
@@ -202,7 +200,9 @@ def main(params):
     optimizer = torch.optim.SGD(model.parameters(), params.lr)
     # optimizer = torch.optim.SGD(model.parameters(), params.lr, momentum=1.) #todo
     # optimizer = torch.optim.Adam(model.parameters(), params.lr)             #todo
-
+    
+    lr_sched = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.95)
+    
     if CUDA: # si on fait du GPU, passage en CUDA
         model = model.cuda()
         criterion = criterion.cuda()
@@ -224,10 +224,11 @@ def main(params):
         top1_acc_test, top5_acc_test, loss_test = epoch(test, model, criterion)
         # plot
         plot.update(loss.avg, loss_test.avg, top1_acc.avg, top1_acc_test.avg)
+        
+        lr_sched.step(i) # todo
 
 
 if __name__ == '__main__':
-
     # Paramètres en ligne de commande
     parser = argparse.ArgumentParser()
     parser.add_argument('--path', default='/tmp/datasets/mnist', type=str, metavar='DIR', help='path to dataset')
@@ -235,12 +236,12 @@ if __name__ == '__main__':
     parser.add_argument('--batch-size', default=128, type=int, metavar='N', help='mini-batch size (default: 128)')
     parser.add_argument('--lr', default=0.1, type=float, metavar='LR', help='learning rate')
     parser.add_argument('--cuda', dest='cuda', action='store_true', help='activate GPU acceleration')
-
+    
     args = parser.parse_args()
     if args.cuda:
         CUDA = True
         cudnn.benchmark = True
-
+    
     main(args)
-
+    
     input("done")
